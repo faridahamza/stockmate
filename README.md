@@ -71,3 +71,4 @@ Because this is a static site with `index.html` at the root:
 ## 📄 License
 
 MIT License. Free to use and customize for personal or commercial shop management.
+
