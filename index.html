@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="StockMate - Modern shop inventory management application built with HTML, CSS, and vanilla JavaScript.">
+  <title>StockMate — Shop Inventory Management</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23059669%22><path d=%22M20 7l-8-4-8 4 8 4 8-4zm-8 6l-7-3.5V17l7 3.5 7-3.5v-7.5L12 13z%22/></svg>">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">StockMate</h1>
+            <p class="brand-subtitle">Shop Inventory Management</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button type="button" class="btn btn-outline" id="loadSampleDataBtn" title="Fill with sample shop products">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Sample Data</span>
+          </button>
+
+          <button type="button" class="btn btn-primary" id="openAddModalBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add New Item</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Summary KPI Cards -->
+      <section class="kpi-grid" aria-label="Inventory summary statistics">
+        <!-- Total Distinct Items -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Total Products</span>
+            <div class="kpi-icon icon-blue" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" id="kpiTotalItems">0</div>
+            <p class="kpi-subtext">Unique shop catalog items</p>
+          </div>
+        </div>
+
+        <!-- Total Stock Quantity -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Total Stock Units</span>
+            <div class="kpi-icon icon-teal" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" id="kpiTotalQuantity">0</div>
+            <p class="kpi-subtext">Combined units in store</p>
+          </div>
+        </div>
+
+        <!-- Total Inventory Value -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-label">Estimated Value</span>
+            <div class="kpi-icon icon-emerald" aria-hidden="true">
+              <span class="naira-symbol-icon">₦</span>
+            </div>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" id="kpiTotalValue">₦0.00</div>
+            <p class="kpi-subtext">Total retail inventory worth</p>
+          </div>
+        </div>
+
+        <!-- Low Stock Items Alert -->
+        <div class="kpi-card" id="kpiLowStockCard">
+          <div class="kpi-header">
+            <span class="kpi-label">Low Stock Alert</span>
+            <div class="kpi-icon icon-amber" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" id="kpiLowStockCount">0</div>
+            <p class="kpi-subtext">Items with &le; 5 units left</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inventory Table Section -->
+      <section class="inventory-section">
+        <div class="section-card">
+
+          <!-- Controls Bar: Search & Filters -->
+          <div class="controls-bar">
+            <!-- Search Input -->
+            <div class="search-box">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Search items by name..." 
+                aria-label="Search items by name"
+                autocomplete="off"
+              >
+              <button type="button" id="clearSearchBtn" class="clear-search-btn" aria-label="Clear search" title="Clear search">
+                &times;
+              </button>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-group" role="tablist" aria-label="Filter items by stock level">
+              <button type="button" class="filter-chip active" data-filter="all" role="tab" aria-selected="true">
+                All Items <span class="chip-count" id="countAll">0</span>
+              </button>
+              <button type="button" class="filter-chip" data-filter="low" role="tab" aria-selected="false">
+                Low Stock (≤ 5) <span class="chip-count chip-amber" id="countLow">0</span>
+              </button>
+              <button type="button" class="filter-chip" data-filter="instock" role="tab" aria-selected="false">
+                In Stock (&gt; 5) <span class="chip-count" id="countInStock">0</span>
+              </button>
+              <button type="button" class="filter-chip" data-filter="outofstock" role="tab" aria-selected="false">
+                Out of Stock (0) <span class="chip-count chip-red" id="countOutOfStock">0</span>
+              </button>
+            </div>
+
+            <!-- Sort By dropdown -->
+            <div class="sort-box">
+              <label for="sortSelect" class="sort-label">Sort by:</label>
+              <select id="sortSelect" class="sort-select">
+                <option value="name-asc">Name (A → Z)</option>
+                <option value="name-desc">Name (Z → A)</option>
+                <option value="price-asc">Price (Lowest first)</option>
+                <option value="price-desc">Price (Highest first)</option>
+                <option value="qty-asc">Stock (Lowest first)</option>
+                <option value="qty-desc">Stock (Highest first)</option>
+                <option value="value-desc">Total Value (Highest first)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Inventory Table Container -->
+          <div class="table-responsive" id="tableContainer">
+            <table class="inventory-table" id="inventoryTable">
+              <thead>
+                <tr>
+                  <th scope="col" class="col-product">Product Details</th>
+                  <th scope="col" class="col-price">Unit Price</th>
+                  <th scope="col" class="col-stock">Stock Level</th>
+                  <th scope="col" class="col-value">Total Value</th>
+                  <th scope="col" class="col-quick-adjust text-center">Quick Stock Adjust</th>
+                  <th scope="col" class="col-actions text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody">
+                <!-- Dynamically populated rows via JavaScript -->
+              </tbody>
+            </table>
+
+            <!-- Empty State (No inventory items at all) -->
+            <div class="empty-state" id="emptyState" hidden>
+              <div class="empty-icon" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <line x1="3.27" y1="6.96" x2="12" y2="12.01"></line>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+              </div>
+              <h2 class="empty-title">Your inventory is empty</h2>
+              <p class="empty-desc">Get started by adding your first shop product, or populate sample retail items to see how StockMate works.</p>
+              <div class="empty-actions">
+                <button type="button" class="btn btn-primary" id="emptyAddBtn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Add First Item</span>
+                </button>
+                <button type="button" class="btn btn-outline" id="emptySampleBtn">
+                  <span>Load Sample Products</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- No Search / Filter Results State -->
+            <div class="empty-state" id="noResultsState" hidden>
+              <div class="empty-icon" aria-hidden="true">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </div>
+              <h2 class="empty-title">No matching products found</h2>
+              <p class="empty-desc" id="noResultsMessage">We couldn't find any products matching your search criteria.</p>
+              <button type="button" class="btn btn-outline" id="resetFiltersBtn">Reset Search &amp; Filters</button>
+            </div>
+          </div>
+
+          <!-- Table Footer Info -->
+          <div class="table-footer" id="tableFooter">
+            <span id="displayCountText">Showing 0 of 0 items</span>
+            <span class="table-legend">
+              <span class="legend-item"><span class="legend-indicator badge-low"></span> Low stock (&le; 5)</span>
+              <span class="legend-item"><span class="legend-indicator badge-out"></span> Out of stock (0)</span>
+            </span>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p><strong>StockMate</strong> &bull; Simple &amp; reliable shop inventory management.</p>
+        <p class="footer-meta">Stored locally in your browser. All prices in Nigerian Naira (₦).</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Add / Edit Item Modal -->
+  <div class="modal-overlay" id="itemModal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-icon" id="modalHeaderIcon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title" id="modalTitle">Add New Shop Item</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Fill in the product details to add it to your shop inventory.</p>
+        </div>
+        <button type="button" class="modal-close" id="closeItemModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="itemForm" novalidate>
+        <input type="hidden" id="itemIdInput">
+
+        <div class="modal-body">
+          <!-- Item Name -->
+          <div class="form-group">
+            <label for="itemNameInput" class="form-label">
+              Item Name <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="itemNameInput" 
+              class="form-control" 
+              placeholder="e.g. Peak Evaporated Milk (160g)" 
+              required
+              maxlength="100"
+              autocomplete="off"
+            >
+            <div class="form-hint">Enter the full name or brand of the product.</div>
+            <div class="form-error" id="nameError"></div>
+          </div>
+
+          <!-- Grid for Price & Quantity -->
+          <div class="form-row">
+            <!-- Unit Price -->
+            <div class="form-group">
+              <label for="itemPriceInput" class="form-label">
+                Unit Price (₦) <span class="required">*</span>
+              </label>
+              <div class="input-prefix-wrapper">
+                <span class="input-prefix" aria-hidden="true">₦</span>
+                <input 
+                  type="number" 
+                  id="itemPriceInput" 
+                  class="form-control has-prefix" 
+                  placeholder="0.00" 
+                  min="0" 
+                  step="any"
+                  inputmode="decimal" 
+                  required
+                >
+              </div>
+              <div class="form-hint">Selling price in Nigerian Naira.</div>
+              <div class="form-error" id="priceError"></div>
+            </div>
+
+            <!-- Quantity in Stock -->
+            <div class="form-group">
+              <label for="itemQtyInput" class="form-label">
+                Quantity in Stock <span class="required">*</span>
+              </label>
+              <input 
+                type="number" 
+                id="itemQtyInput" 
+                class="form-control" 
+                placeholder="0" 
+                min="0" 
+                step="1" 
+                inputmode="numeric" 
+                required
+              >
+              <div class="form-hint">Items &le; 5 will be marked as low stock.</div>
+              <div class="form-error" id="qtyError"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelItemModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveItemBtn">
+            <span id="saveBtnText">Save Item</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Stock Adjustment Modal (Sold / Restocked) -->
+  <div class="modal-overlay" id="adjustModal" aria-hidden="true" role="dialog" aria-labelledby="adjustModalTitle">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <div class="modal-header-icon icon-adjust" id="adjustModalIcon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title" id="adjustModalTitle">Update Stock</h2>
+          <p class="modal-subtitle" id="adjustModalSubtitle">Record product sales or arrived stock.</p>
+        </div>
+        <button type="button" class="modal-close" id="closeAdjustModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="adjustForm" novalidate>
+        <input type="hidden" id="adjustItemId">
+        <input type="hidden" id="adjustMode" value="sale">
+
+        <div class="modal-body">
+          <div class="adjust-item-summary">
+            <span class="adjust-item-name" id="adjustItemNameDisplay">-</span>
+            <span class="adjust-current-stock" id="adjustCurrentStockDisplay">Current stock: 0</span>
+          </div>
+
+          <!-- Mode Selector Tabs: Product Sold vs Stock Arrived -->
+          <div class="adjust-type-toggle">
+            <button type="button" class="adjust-type-btn active" id="modeSaleBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Record Sale (Sold)
+            </button>
+            <button type="button" class="adjust-type-btn" id="modeRestockBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              New Stock (Arrived)
+            </button>
+          </div>
+
+          <!-- Quantity Input -->
+          <div class="form-group">
+            <label for="adjustAmountInput" class="form-label" id="adjustAmountLabel">
+              Units Sold <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="adjustAmountInput" 
+              class="form-control" 
+              placeholder="e.g. 5" 
+              min="1" 
+              step="1" 
+              inputmode="numeric" 
+              required
+            >
+            <div class="form-hint" id="adjustHint">Enter the number of units to deduct from inventory.</div>
+            <div class="form-error" id="adjustError"></div>
+          </div>
+
+          <!-- Result Preview -->
+          <div class="stock-preview-box" id="stockPreviewBox">
+            <span>New Stock Quantity:</span>
+            <strong id="newStockPreview">0</strong>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelAdjustBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmAdjustBtn">Update Stock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal" aria-hidden="true" role="dialog" aria-labelledby="deleteModalTitle">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <div class="modal-header-icon icon-danger">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title" id="deleteModalTitle">Confirm Deletion</h2>
+          <p class="modal-subtitle">This action cannot be undone.</p>
+        </div>
+        <button type="button" class="modal-close" id="closeDeleteModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="delete-confirmation-text">
+          Are you sure you want to delete <strong id="deleteItemName">-</strong> from your inventory?
+        </p>
+        <div class="delete-item-details" id="deleteItemDetails">
+          <!-- Filled by JavaScript -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Vanilla JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
+
